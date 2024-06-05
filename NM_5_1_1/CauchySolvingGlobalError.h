@@ -2,6 +2,7 @@
 #include "SolvingMethod.h"
 #include <vector>
 #include <cmath>
+#include<iostream>
 using namespace std;
 
 class CauchySolvingGlobalError
@@ -16,7 +17,6 @@ private:
 
 	double macheps, H, eps, maxEps, hMin, A,B,s;
 
-	double eps_order(double eps);
 
 	void machepsCalculation()
 	{
@@ -33,7 +33,7 @@ private:
 
 	double HCalculation(double H, double y1, double y2)
 	{
-		return H / 2 * pow((pow(2, s) - 1)*eps / abs(y1 - y2), 1 / s);
+		return (H / 2) * pow((pow(2.0, s) - 1.0)*maxEps / abs(y1 - y2), 1/ s);
 	}
 	
 

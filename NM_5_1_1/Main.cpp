@@ -8,7 +8,7 @@
 double function(double x, double y)
 {
 
-	return 2*x;
+	return 2*x-y+x*x;
 }
 
 double eps, H, A, B, Yc, C;
@@ -30,7 +30,7 @@ int main()
 	try{
 		CauchySolvingGlobalError solving(new Runge_Kutta_4th, function, 4);
 		vector<double> result = solving.Solving(A, B, C, Yc, H, eps);
-		cout << result[0] << ' ' << result[1] << ' ' << solving.exitCode() << ' ' << solving.exitEps() << ' ' << solving.exitH();
+		cout << result[0] << ' ' << result[1] << ' ' << solving.exitCode() << ' ' << solving.exitEps() << ' ' << solving.exitH()<<'\n';
 			
 	}
 	catch (invalid_argument e)

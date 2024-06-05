@@ -1,12 +1,12 @@
 #include "CauchySolvingGlobalError.h"
 #include <iostream>
 
-vector<double> CauchySolvingGlobalError::Solving(double A, double B, double C, double Yc, double H, double eps)
+vector<double> CauchySolvingGlobalError::Solving(double A, double B, double C, double Yc, double H, double inEps)
 {
 	vector<double> result(2);
 	double prev_error;
 	double curr_error=0;
-	maxEps = eps;
+	maxEps = inEps;
 	hMimCalculation();
 	H = (B - A) / ceil((B - A) / H);
 	this->H = H;
@@ -21,7 +21,7 @@ vector<double> CauchySolvingGlobalError::Solving(double A, double B, double C, d
 			double prev_result = Yc,prev_estimationResult=Yc;
 			double int_result;
 			double estimationResult;
-			while (abs(prev_point-B)>eps)
+			while (B-prev_point>inEps)
 			{
 				int_result = solvingMethod->Calculation(prev_result, prev_point, H, function);
 				estimationResult = solvingMethod->Calculation(prev_estimationResult, prev_point, H / 2, function);
@@ -33,6 +33,7 @@ vector<double> CauchySolvingGlobalError::Solving(double A, double B, double C, d
 			curr_error = abs(int_result - estimationResult);
 			this->H = H;
 			H = HCalculation(H,int_result,estimationResult);
+			H = (B - A) / ceil((B - A) / H);
 			result[0] = B;
 			result[1] = int_result;
 		}
@@ -42,7 +43,7 @@ vector<double> CauchySolvingGlobalError::Solving(double A, double B, double C, d
 			double prev_result = Yc, prev_estimationResult = Yc;
 			double int_result;
 			double estimationResult;
-			while (abs(prev_point-A)>eps)
+			while (prev_point-A>inEps)
 			{
 				int_result = solvingMethod->Calculation(prev_result, prev_point, -H, function);
 				estimationResult = solvingMethod->Calculation(prev_estimationResult, prev_point, -H / 2, function);
@@ -54,40 +55,18 @@ vector<double> CauchySolvingGlobalError::Solving(double A, double B, double C, d
 			curr_error = abs(int_result - estimationResult);
 			this->H = H;
 			H = HCalculation(H, int_result, estimationResult);
+			H = (B - A) / ceil((B - A) / H);
 			result[0] = A;
 			result[1] = int_result;
 		}
 	} while (H > hMin && curr_error > maxEps && abs(curr_error - prev_error) > maxEps);
 	eps = curr_error;
-	if (abs(curr_error - prev_error) <= maxEps)
-		lcod = 1;
-	else
 	if (curr_error <= maxEps)
 		lcod = 0;
 	else
+	if (abs(curr_error - prev_error) <= maxEps)
+		lcod = 1;
+	else
 		lcod = 2;
 	return result;
-}
-double CauchySolvingGlobalError::eps_order(double eps)
-{
-	if (eps < 1)
-	{
-		int order = 0;
-		while (eps < 1)
-		{
-			eps *= 10;
-			order--;
-		}
-		return order;
-	}
-	else
-	{
-		int order = 0;
-		while (eps>1)
-		{
-			eps /= 10;
-			order++;
-		}
-		return order;
-	}
 }
